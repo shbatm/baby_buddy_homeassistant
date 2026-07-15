@@ -176,6 +176,10 @@ class BabyBuddyChildDataSensor(BabyBuddySensor):
     @property
     def native_unit_of_measurement(self) -> str | None:
         """Return entity unit of measurement."""
+        # Timestamp sensors must not have a unit, but the configured unit
+        # options share their keys with the sensors (e.g. "feedings").
+        if self.entity_description.device_class == SensorDeviceClass.TIMESTAMP:
+            return None
         return self.coordinator.entry.options.get(
             self.entity_description.key,
             self.entity_description.native_unit_of_measurement,

@@ -50,6 +50,8 @@ This integration provides the following entities.
 
 - A sensor for each **last** data entry, including `diaper_change`, `feeding`, `medication`, `notes`, `sleep`, `temperature`, `tummy_time`, `temperature`, and `weight`.
 
+- The `feeding` sensor's state is the timestamp of the last feeding; the amount is available as an attribute.
+
 - The `medication` sensor requires Baby Buddy v2.9.0 or later; on older servers it is simply not created. If a `next_dose_interval` is set on the last entry, the sensor exposes computed `next_dose_time` and `next_dose_ready` attributes.
 
 ### Switches

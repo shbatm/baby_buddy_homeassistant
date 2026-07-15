@@ -20,13 +20,15 @@ from custom_components.babybuddy.const import (
     ATTR_ICON_TIMER_SAND,
     ATTR_MILESTONE,
     ATTR_NOTES,
+    ATTR_START,
     ATTR_TAGS,
     DOMAIN,
 )
-from homeassistant.components.sensor import SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.components.sensor.const import ATTR_STATE_CLASS
 from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
 from homeassistant.const import (
+    ATTR_DEVICE_CLASS,
     ATTR_ENTITY_ID,
     ATTR_ICON,
     SERVICE_TURN_ON,
@@ -97,13 +99,20 @@ async def test_service_add_feeding_start_stop(
     state = hass.states.get(entity_id)
 
     assert state
+    assert state.attributes[ATTR_DEVICE_CLASS] == SensorDeviceClass.TIMESTAMP
     assert state.attributes[ATTR_ICON] == ATTR_ICON_BABY_BOTTLE
+    assert (
+        state.attributes[ATTR_AMOUNT]
+        == MOCK_SERVICE_ADD_FEEDING_START_STOP[ATTR_AMOUNT]
+    )
     assert (
         state.attributes[ATTR_NOTES] == MOCK_SERVICE_ADD_FEEDING_START_STOP[ATTR_NOTES]
     )
-    assert state.attributes[ATTR_STATE_CLASS] == SensorStateClass.MEASUREMENT
     assert state.attributes[ATTR_TAGS] == MOCK_SERVICE_ADD_FEEDING_START_STOP[ATTR_TAGS]
-    assert state.state == str(MOCK_SERVICE_ADD_FEEDING_START_STOP[ATTR_AMOUNT])
+    assert (
+        dt_util.parse_datetime(state.state)
+        == MOCK_SERVICE_ADD_FEEDING_START_STOP[ATTR_START]
+    )
 
 
 @pytest.mark.usefixtures("setup_baby_buddy_entry_live", "test_timer")
@@ -125,11 +134,12 @@ async def test_service_add_feeding_timer(
     assert dt_util.parse_duration(state.attributes[ATTR_DURATION]) >= timedelta(
         seconds=ATTR_INT_10
     )
+    assert state.attributes[ATTR_DEVICE_CLASS] == SensorDeviceClass.TIMESTAMP
     assert state.attributes[ATTR_ICON] == ATTR_ICON_BABY_BOTTLE
+    assert state.attributes[ATTR_AMOUNT] == MOCK_SERVICE_ADD_FEEDING_TIMER[ATTR_AMOUNT]
     assert state.attributes[ATTR_NOTES] == MOCK_SERVICE_ADD_FEEDING_TIMER[ATTR_NOTES]
-    assert state.attributes[ATTR_STATE_CLASS] == SensorStateClass.MEASUREMENT
     assert state.attributes[ATTR_TAGS] == MOCK_SERVICE_ADD_FEEDING_TIMER[ATTR_TAGS]
-    assert state.state == str(MOCK_SERVICE_ADD_FEEDING_TIMER[ATTR_AMOUNT])
+    assert dt_util.parse_datetime(state.state) is not None
 
 
 @pytest.mark.usefixtures("setup_baby_buddy_entry_live")
